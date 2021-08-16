@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Quagga from 'quagga';
 
-const App = (props) => {
-
+const App = props => {
   const firstUpdate = useRef(true);
   const [isStart, setIsStart] = useState(false);
   const [barcode, setBarcode] = useState('');
@@ -11,6 +10,7 @@ const App = (props) => {
     return () => {
       if (isStart) stopScanner();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -21,6 +21,7 @@ const App = (props) => {
 
     if (isStart) startScanner();
     else stopScanner();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isStart]);
 
   const _onDetected = res => {
@@ -35,8 +36,8 @@ const App = (props) => {
           type: 'LiveStream',
           target: document.querySelector('#scanner-container'),
           constraints: {
-            facingMode: 'environment' // or user
-          }
+            facingMode: 'environment', // or user
+          },
         },
         numOfWorkers: navigator.hardwareConcurrency,
         locate: true,
@@ -45,7 +46,7 @@ const App = (props) => {
           drawBoundingBox: true,
           showFrequency: true,
           drawScanline: true,
-          showPattern: true
+          showPattern: true,
         },
         multiple: false,
         locator: {
@@ -62,9 +63,9 @@ const App = (props) => {
             boxFromPatches: {
               showTransformed: false,
               showTransformedBox: false,
-              showBB: false
-            }
-          }
+              showBB: false,
+            },
+          },
         },
         decoder: {
           readers: [
@@ -79,9 +80,9 @@ const App = (props) => {
             'i2of5_reader',
             'i2of5_reader',
             '2of5_reader',
-            'code_93_reader'
-          ]
-        }
+            'code_93_reader',
+          ],
+        },
       },
       err => {
         if (err) {
@@ -103,20 +104,30 @@ const App = (props) => {
             parseInt(drawingCanvas.getAttribute('width')),
             parseInt(drawingCanvas.getAttribute('height'))
           );
-          result.boxes.filter(box => box !== result.box).forEach(box => {
-            Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, {
-              color: 'green',
-              lineWidth: 2
+          result.boxes
+            .filter(box => box !== result.box)
+            .forEach(box => {
+              Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, {
+                color: 'green',
+                lineWidth: 2,
+              });
             });
-          });
         }
 
         if (result.box) {
-          Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: '#00F', lineWidth: 2 });
+          Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, {
+            color: '#00F',
+            lineWidth: 2,
+          });
         }
 
         if (result.codeResult && result.codeResult.code) {
-          Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, { color: 'red', lineWidth: 3 });
+          Quagga.ImageDebug.drawPath(
+            result.line,
+            { x: 'x', y: 'y' },
+            drawingCtx,
+            { color: 'red', lineWidth: 3 }
+          );
         }
       }
     });
@@ -128,14 +139,32 @@ const App = (props) => {
     Quagga.stop();
   };
 
-  return <div>
-    <h3>Barcode scanner in React - <a href="https://www.cluemediator.com/" target="_blank">Clue Mediator</a></h3>
-    <button onClick={() => setIsStart(prevStart => !prevStart)} style={{ marginBottom: 20 }}>{isStart ? 'Stop' : 'Start'}</button>
-    {isStart && <React.Fragment>
-      <div id="scanner-container" />
-      <span>Barcode: {barcode}</span>
-    </React.Fragment>}
-  </div>
-}
+  return (
+    <div>
+      <h3>
+        Barcode scanner in React -{' '}
+        <a
+          href="https://www.cluemediator.com/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Clue Mediator
+        </a>
+      </h3>
+      <button
+        onClick={() => setIsStart(prevStart => !prevStart)}
+        style={{ marginBottom: 20 }}
+      >
+        {isStart ? 'Stop' : 'Start'}
+      </button>
+      {isStart && (
+        <React.Fragment>
+          <div id="scanner-container" />
+          <span>Barcode: {barcode}</span>
+        </React.Fragment>
+      )}
+    </div>
+  );
+};
 
 export default App;
